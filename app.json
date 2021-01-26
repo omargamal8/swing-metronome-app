@@ -1,0 +1,12 @@
+{
+  "name": "react-native-sc",
+  "displayName": "react-native-sc",
+  "expo": {
+    "name": "react-native-sc",
+    "slug": "react-native-sc",
+    "version": "1.0.0",
+    "assetBundlePatterns": [
+      "**/*"
+    ]
+  }
+}
