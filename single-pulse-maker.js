@@ -50,14 +50,14 @@ export class SinglePulseMaker extends Component{
     }
     render(){
         return (<>
-                <div style={{position:"relative"}}>
+                <View style={{position:"relative"}}>
                 <img src={Main_beat_track} alt="main track" />
                 {(!this.state.playing)?
                 <a style={{position:"absolute", left:"40%", top:"30%"}} onClick={this.handlePlayStopButton} ><img src={playLogo} alt="play" /></a>
                 :
                 <a style={{position:"absolute", left:"30%", top:"30%"}} onClick={this.handlePlayStopButton} ><img src={stopLogo} alt="play" /></a>
                 }
-                </div>
+                </View>
                 
         </>)
     }

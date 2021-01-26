@@ -73,11 +73,12 @@ class MetronomeApp extends Component {
         console.log("ReRender")
         return (
             <View style={styles.container}>
+            <BpmPicker bpm={this.state.bpm} setBPM={this.setBPM} ></BpmPicker>
+
                 {console.log("GLOBAL BPM", this.state.bpm)}
             <SinglePulseMaker pulse_time_left={0} playing={false} onPulseCallback={this.tick} stopCleanUp={this.stopPressed}></SinglePulseMaker>
 
             {/* <StatusBar style="auto" /> */}
-            {/* <BpmPicker bpm={this.state.bpm} setBPM={this.setBPM} ></BpmPicker> */}
             {/* <button onClick={()=>{ */}
                 {/* setSubd(new EighthNote(4, 4)) */}
             {/* }}>change sbd</button> */}
