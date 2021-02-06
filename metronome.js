@@ -9,8 +9,8 @@ class MetronomeApp extends Component {
     constructor(props){
         super(props)
         this.state = {
-            bpm:60,
-            active_subd: new SixteenthNote(4,4),
+            bpm:20,
+            active_subd: new QuarterNote(4,4),
             sound: undefined,
             dummy: false,
         }
