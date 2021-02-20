@@ -4,7 +4,7 @@ import Main_beat_track from './assets/Main_beat_track.png'
 import Main_beat_track_h from './assets/Main_beat_track_highlighted.png'
 import playLogo from './assets/Play.png'
 import stopLogo from './assets/Stop.png'
-
+var accurateInterval = require('accurate-interval');
 export class SinglePulseMaker extends Component{
     constructor(props){
         super(props)
@@ -14,35 +14,104 @@ export class SinglePulseMaker extends Component{
                       total_pulses:0,
                       animValue: 0 }
         this.id = Math.floor(Math.random()*100)
+        this.last = (new Date().getTime())
         console.log("SINGLE PULSE MAKER!!", this.id)
         this.handlePlayStopButton = this.handlePlayStopButton.bind(this)
         this.onPulse = this.onPulse.bind(this)
+        
     }
     
     // console.log("==Single Pulse Maker==", pulse_time_left, playing, onPulseCallback)
-    onPulse(){
-        console.log(this.id, "Internal tick number:", this.state.total_pulses+1)
-        this.setState({total_pulses:this.state.total_pulses+1})
+    async onPulse(){
+        let c = (new Date()).getTime()
+        console.log("interval:", (c-this.last) )
+        this.last = c
+        // console.log(this.id, "Internal tick number:", this.state.total_pulses+1)
+        // this.setState({total_pulses:this.state.total_pulses+1})
         const new_timeout_left = this.props.onPulseCallback()
-        clearInterval(this.state.timer)
-        this.setState({timer:setInterval(this.onPulse, new_timeout_left)})
+        // console.log("TIMEOUT LEFT", new_timeout_left)
+        // clearInterval(this.state.timer)
+        this.setState({timer:setTimeout(this.onPulse, c + 750 - ((new Date()).getTime()))})
         Animated.timing(this.state.animValue,{
             toValue:1,
-            duration:100
-        }).start(()=>{console.log("ANIMATION ENDED====");Animated.timing(this.state.animValue, {toValue:0, duration:100}).start()})
+            duration:50
+        }).start(()=>{Animated.timing(this.state.animValue, {toValue:0, duration:50}).start()})
         // setPulseTimeLeft(new_timeout_left)
         // setNextTickTimer(setTimeout(onPulse, new_timeout_left))
 
     }
         
+    setExactInterval(callback, duration, resolution) {
+        let start = (new Date()).getTime();
+        let start_i = (new Date()).getTime();
+        const timeout = setInterval(function(){
+            const c = (new Date()).getTime()
+            console.log("small interval",c - start_i)
+            start_i = c
+            if (c - start > duration) {
+                console.log("INTERVAL", c- start)
+                callback();
+                start = c;
+                // clearInterval(timeout);
+            }
+        }, resolution);
+    
+        return timeout;
+    };
+
     componentDidMount(){
         if(this.state.playing){
-            this.setState({timer:setInterval(onPulse, 600)})
+            this.setState({timer:setExactInterval(onPulse, 600, 60)})
         }
         this.setState({animValue:new Animated.Value(0)})
+        // let last = (new Date()).getTime();
+        // var foo = accurateInterval(function(scheduledTime) {
+        //     const c = (new Date()).getTime()
+        //     console.log("Interval", c - last)
+        //     last = c
+        //     // console.log('Actual time: ' + Date.now() + ' -- Scheduled time: ' + scheduledTime);
+        // }, 200, {aligned: true, immediate: true});
+        
+        // setTimeout(()=>{foo.clear()}, 10000)
     }
 
+    accurateInterval(func, interval, opts) {
 
+        if (!opts) opts = {};
+    
+        var clear, nextAt, timeout, wrapper, now;
+    
+        now = new Date().getTime();
+    
+        nextAt = now;
+    
+        if (opts.aligned) {
+            nextAt += interval - (now % interval);
+        }
+        if (!opts.immediate) {
+            nextAt += interval;
+        }
+    
+        timeout = null;
+    
+        wrapper = function wrapper() {
+            func(scheduledTime);
+            var scheduledTime = nextAt;
+            nextAt += interval;
+            timeout = setTimeout(wrapper, nextAt - new Date().getTime());
+        };
+    
+        clear = function clear() {
+            return clearTimeout(timeout);
+        };
+    
+        timeout = setTimeout(wrapper, nextAt - new Date().getTime());
+    
+        return {
+            clear: clear
+        };
+    
+      };
     
 
     handlePlayStopButton(){
@@ -52,11 +121,12 @@ export class SinglePulseMaker extends Component{
            this.setState({playing:false})
         }
         else{            
-            this.setState({timer:setInterval(this.onPulse, 0), playing:true})
+            const new_timeout_left = this.props.onPulseCallback()
+            this.setState({timer:setTimeout(this.onPulse, 10), playing:true})
         }
     }
     render(){
-        console.log("animated value", this.state.animValue)
+        // console.log("animated value", this.state.animValue)
         // Image.getSize(require("./assets/Main_beat_track.png"), (width, height)=>{console.log("hobs=======?", width, height)}, (error)=>{console.log("errored======", error)})
         return (
                 <Animated.View style={{position:"relative"}}>

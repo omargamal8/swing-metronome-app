@@ -10,10 +10,12 @@ class MetronomeApp extends Component {
     constructor(props){
         super(props)
         this.state = {
-            bpm:20,
+            bpm: 200,
             active_subd: new QuarterNote(4,4),
             sound: undefined,
-            dummy: false,
+            sound2: undefined,
+            sounds: [],
+            dummy: 0,
         }
         this.tick = this.tick.bind(this)
         this.setBPM = this.setBPM.bind(this)
@@ -24,13 +26,30 @@ class MetronomeApp extends Component {
     componentDidMount(){
           console.log("Initializing sound")
           Audio.Sound.createAsync(
-            require('./assets/MetronomeUp.wav')
+            require('./assets/1.wav')
           ).then((sound)=>{
             console.log("ACQUIRED Asset", sound)
-            this.setState({sound:sound})
+            this.setState({sound:sound, sounds: [...this.state.sounds, sound]})
+          });              
+          Audio.Sound.createAsync(
+            require('./assets/1.wav')
+          ).then((sound)=>{
+            console.log("ACQUIRED Asset", sound)
+            this.setState({sound2:sound, sounds:[...this.state.sounds, sound]})
+          });              
+          Audio.Sound.createAsync(
+            require('./assets/1.wav')
+          ).then((sound)=>{
+            console.log("ACQUIRED Asset", sound)
+            this.setState({sound:sound, sounds: [...this.state.sounds, sound]})
+          });              
+          Audio.Sound.createAsync(
+            require('./assets/1.wav')
+          ).then((sound)=>{
+            console.log("ACQUIRED Asset", sound)
+            this.setState({sound2:sound, sounds:[...this.state.sounds, sound]})
           });              
           console.log("DONE WITH THE SOUND BS")
-          //   const a = 
     }
 
     componentWillUnmount(){
@@ -43,29 +62,15 @@ class MetronomeApp extends Component {
         this.setState({bpm:value})
     }
 
-  // React.useEffect(()=>{
-  //   console.log("BPM CHANGED", bpm)
-  // }, [bpm])
 
     tick(){
         // console.log("TICK", this.state.sound, this.state.bpm)
-        // console.log("tick")
-        // console.log("SIXTEen getting next interaal", active_subd.getNextTickInterval())
-        this.state.sound.sound.playAsync().then(()=>{}).catch(err=>{console.log("errrorr===========")})
+        this.state.sounds[this.state.dummy].sound.playAsync().then(()=>{}).catch(err=>{console.log("errrorr===========")})
         this.state.active_subd.incrementTickCounter()
-        // console.log("NEXT", this.state.bpm * (this.state.active_subd.getNextTickInterval() / 60) * 1000)
-        // console.log("NEXT INTERVAL FRACTION", this.state.active_subd.getNextTickInterval())
+        this.setState({dummy:(this.state.dummy+1)%4})
         return (60 * this.state.active_subd.getNextTickInterval() / this.state.bpm) * 1000
     }
 
-  // React.useEffect((new_subd)=>{
-  //   console.log("SUBD Changed")
-  //   setSubd(new_subd)
-  // }, [active_subd])
-  
-  // React.useEffect(()=>{
-
-  // }, [])
     stopPressed(){
       this.state.active_subd.clearCounters()
     }
@@ -75,14 +80,14 @@ class MetronomeApp extends Component {
       this.setState({active_subd})
     }
     render(){
-        console.log("ReRender")
         return (
             <View style={styles.container}>
+            
             <BpmPicker bpm={this.state.bpm} setBPM={this.setBPM} ></BpmPicker>
             <SubdivisionPicker setActiveSubD={this.setActiveSubD}></SubdivisionPicker>
-                {console.log("GLOBAL BPM", this.state.bpm)}
+                {/* {console.log("GLOBAL BPM", this.state.bpm)} */}
             <SinglePulseMaker pulse_time_left={0} playing={false} onPulseCallback={this.tick} stopCleanUp={this.stopPressed}></SinglePulseMaker>
-                {console.log("GLOBAL BPM", this.state.bpm)}
+                {/* {console.log("GLOBAL BPM", this.state.bpm)} */}
             {/* <StatusBar style="auto" /> */}
             {/* <button onClick={()=>{ */}
                 {/* setSubd(new EighthNote(4, 4)) */}

@@ -8,6 +8,7 @@
     "test": "jest"
   },
   "dependencies": {
+    "accurate-interval": "^1.0.9",
     "expo": "~39.0.2",
     "expo-av": "~8.6.0",
     "expo-splash-screen": "~0.6.2",
