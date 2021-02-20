@@ -23,7 +23,7 @@ class SubdivisionPicker extends Component {
 
     render(){
         return (
-            <View style={{position:"relative", left:"22%", top:"-27%"}}>
+            <View style={{display:"flex", flexDirection:"column", border:"solid 1px black", width:"20vw", marginRight:"10vw" }}>
               <Image style={(this.state.active_subd_i===0)?styles.subdivs_active:styles.subdivs_unactive} onClick={(e=>{this.setState({active_subd_i:0});this.props.setActiveSubD(this.subdivs[this.state.active_subd_i])})} source={require('./assets/mmsub1.png')} alt=""></Image>
               <Image style={(this.state.active_subd_i===1)?styles.subdivs_active:styles.subdivs_unactive} onClick={(e=>{this.setState({active_subd_i:1});this.props.setActiveSubD(this.subdivs[this.state.active_subd_i])})} source={require('./assets/mmsub3.png')} alt=""></Image>
               <Image style={(this.state.active_subd_i===2)?styles.subdivs_active:styles.subdivs_unactive} onClick={(e=>{this.setState({active_subd_i:2});this.props.setActiveSubD(this.subdivs[this.state.active_subd_i])})} source={require('./assets/mmsub2.png')} alt=""></Image>
@@ -35,12 +35,6 @@ class SubdivisionPicker extends Component {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
   subdivs_active:{
       height: "50px",
       width: "50px", 

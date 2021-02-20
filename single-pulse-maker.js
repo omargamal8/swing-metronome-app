@@ -4,7 +4,9 @@ import Main_beat_track from './assets/Main_beat_track.png'
 import Main_beat_track_h from './assets/Main_beat_track_highlighted.png'
 import playLogo from './assets/Play.png'
 import stopLogo from './assets/Stop.png'
+import CircularSlider from "./circular-slider"
 var accurateInterval = require('accurate-interval');
+
 export class SinglePulseMaker extends Component{
     constructor(props){
         super(props)
@@ -129,14 +131,22 @@ export class SinglePulseMaker extends Component{
         // console.log("animated value", this.state.animValue)
         // Image.getSize(require("./assets/Main_beat_track.png"), (width, height)=>{console.log("hobs=======?", width, height)}, (error)=>{console.log("errored======", error)})
         return (
-                <Animated.View style={{position:"relative"}}>
-                <Image source={Main_beat_track} alt="main track" style={{height:200, width:200}} />
-                <Animated.Image source={Main_beat_track_h} alt="main track" style={{height:200, width:200, position:"absolute", opacity: this.state.animValue}} />
+                <Animated.View style={{border: "solid 1px black", height:"100%", width:"100%", display:"flex",justifyContent:"center", alignItems:"center"}}>
+                <Image   onLayout={event => {
+    const layout = event.nativeEvent.layout;
+    console.log('height:', layout.height);
+    console.log('width:', layout.width);
+    console.log('x:', layout.x);
+    console.log('y:', layout.y);
+  }} source={Main_beat_track} alt="main track" style={{height:250, width:250 }} />
+                <Animated.Image source={Main_beat_track_h} alt="main track" style={{height:250, width:250, position:"absolute", opacity: this.state.animValue}} />
                 {(!this.state.playing)?
-                <a style={{position:"absolute", left:"40%", top:"30%"}} onClick={this.handlePlayStopButton} ><img src={playLogo} alt="play"/></a>
-                :
-                <a style={{position:"absolute", left:"30%", top:"30%"}} onClick={this.handlePlayStopButton} ><img src={stopLogo} alt="stop"/></a>
+                <a style={{position:"absolute"}} onClick={this.handlePlayStopButton} ><img src={playLogo} alt="play"/></a> 
+                : 
+                <a style={{position:"absolute"}} onClick={this.handlePlayStopButton} ><img src={stopLogo} alt="stop"/></a>
                 }
+                <CircularSlider style={{position:"absolute"}} btnRadius={80}></CircularSlider>
+
                 </Animated.View>
         )
         

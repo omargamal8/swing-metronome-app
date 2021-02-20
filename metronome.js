@@ -6,6 +6,11 @@ import {SinglePulseMaker} from './single-pulse-maker'
 import {BeatTracker, SixteenthNote, EighthNote, QuarterNote} from './beat-tracker'
 import  SubdivisionPicker  from './subdivision-picker'
 import {Audio} from 'expo-av'
+import BpmTapper from "./bpm-tapper"
+import SoundPicker from "./sound-picker"
+import NavBar from "./nav-bar"
+import { Sound } from 'expo-av/build/Audio';
+
 class MetronomeApp extends Component {
     constructor(props){
         super(props)
@@ -81,13 +86,34 @@ class MetronomeApp extends Component {
     }
     render(){
         return (
-            <View style={styles.container}>
-            
-            <BpmPicker bpm={this.state.bpm} setBPM={this.setBPM} ></BpmPicker>
-            <SubdivisionPicker setActiveSubD={this.setActiveSubD}></SubdivisionPicker>
+            <View style={{display:"flex", flexDirection:"column", border:"1px solid red", height:"100vh",justifyContent:"space-evenly"}}>
+              <View style={{marginTop:"5vh", marginLeft:"10vw", display:"flex", height:"17vh", flexDirection:"row", justifyContent:"space-between"}}>
+                <BpmPicker bpm={this.state.bpm} setBPM={this.setBPM} ></BpmPicker>
+                <SubdivisionPicker style={{border:"solid 1px black"}} setActiveSubD={this.setActiveSubD}></SubdivisionPicker>
+              </View>
+                  {/* {console.log("GLOBAL BPM", this.state.bpm)} */}
+              <View style={{height:"32vh"}}>
+                <SinglePulseMaker  pulse_time_left={0} playing={false} onPulseCallback={this.tick} stopCleanUp={this.stopPressed}></SinglePulseMaker>
+              </View>
                 {/* {console.log("GLOBAL BPM", this.state.bpm)} */}
-            <SinglePulseMaker pulse_time_left={0} playing={false} onPulseCallback={this.tick} stopCleanUp={this.stopPressed}></SinglePulseMaker>
-                {/* {console.log("GLOBAL BPM", this.state.bpm)} */}
+              <View style={{display:"flex", height:"17vh", flexDirection:"row", justifyContent:"space-between", border:"1px solid black"}}>
+                <View style={{display:"flex", flexDirection:"column", marginLeft:"10vw"}}>
+                  <BpmTapper style={{border:"1px solid black"}}></BpmTapper>
+                  <h1 style={{border:"solid 1px black", width:"20vw", justifyItems:"center", textAlign:"center"}}> 4/4 </h1>
+                </View>
+                
+                <SoundPicker/>
+
+                {/* <View style={{display:"flex", flexDirection:"column", marginRight:"10vw"}}>
+                  <BpmTapper style={{border:"1px solid black"}}></BpmTapper>
+                  <h1 style={{border:"solid 1px black", width:"20vw", justifyItems:"center"}}> 4/4 </h1>
+                </View> */}
+
+                {/* <BpmPicker bpm={this.state.bpm} setBPM={this.setBPM} ></BpmPicker> */}
+                {/* <SubdivisionPicker style={{border:"solid 1px black"}} setActiveSubD={this.setActiveSubD}></SubdivisionPicker> */}
+              </View>
+              <View style={{height:"10vh", border:"1px solid black"}}>3</View>
+              <NavBar style={{height:"10vh", border:"1px solid black"}}>4</NavBar>
             {/* <StatusBar style="auto" /> */}
             {/* <button onClick={()=>{ */}
                 {/* setSubd(new EighthNote(4, 4)) */}
