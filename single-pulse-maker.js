@@ -14,12 +14,15 @@ export class SinglePulseMaker extends Component{
                       playing:false, 
                       timer:undefined,
                       total_pulses:0,
-                      animValue: 0 }
+                      animValue: 0,
+                      xx:0,
+                      yy:0 }
         this.id = Math.floor(Math.random()*100)
         this.last = (new Date().getTime())
         console.log("SINGLE PULSE MAKER!!", this.id)
         this.handlePlayStopButton = this.handlePlayStopButton.bind(this)
         this.onPulse = this.onPulse.bind(this)
+        this.setXY = this.setXY.bind(this)
         
     }
     
@@ -127,26 +130,32 @@ export class SinglePulseMaker extends Component{
             this.setState({timer:setTimeout(this.onPulse, 10), playing:true})
         }
     }
+    setXY(x, y){
+        this.setState({xx:x, yy:y})
+    }
     render(){
+        // console.log("RERENDER", this.state.xx, this.state.yy)
         // console.log("animated value", this.state.animValue)
         // Image.getSize(require("./assets/Main_beat_track.png"), (width, height)=>{console.log("hobs=======?", width, height)}, (error)=>{console.log("errored======", error)})
         return (
                 <Animated.View style={{border: "solid 1px black", height:"100%", width:"100%", display:"flex",justifyContent:"center", alignItems:"center"}}>
-                <Image   onLayout={event => {
-    const layout = event.nativeEvent.layout;
-    console.log('height:', layout.height);
-    console.log('width:', layout.width);
-    console.log('x:', layout.x);
-    console.log('y:', layout.y);
-  }} source={Main_beat_track} alt="main track" style={{height:250, width:250 }} />
+                <Image onLayout={event => {
+                const layout = event.nativeEvent.layout;
+                console.log('Circ height:', layout.height);
+                console.log('Circ width:', layout.width);
+                console.log('Circ x:', layout.x);
+                console.log('Circ y:', layout.y);
+                }}
+                source={Main_beat_track} alt="main track" style={{height:250, width:250 }} />
                 <Animated.Image source={Main_beat_track_h} alt="main track" style={{height:250, width:250, position:"absolute", opacity: this.state.animValue}} />
                 {(!this.state.playing)?
                 <a style={{position:"absolute"}} onClick={this.handlePlayStopButton} ><img src={playLogo} alt="play"/></a> 
                 : 
                 <a style={{position:"absolute"}} onClick={this.handlePlayStopButton} ><img src={stopLogo} alt="stop"/></a>
                 }
-                <CircularSlider style={{position:"absolute"}} btnRadius={80}></CircularSlider>
-
+                <CircularSlider style={{position:"absolute"}} btnRadius={80} setXY={this.setXY}></CircularSlider>
+                <View style={{border: "solid 1px black", borderRadius:"50%", height:25, width:25, backgroundColor:"white" ,position:"absolute",
+                                transform:[{translateY:-11.5 - 125 + this.state.yy}, {translateX:-125-99.5 + this.state.xx}]}}/>
                 </Animated.View>
         )
         
