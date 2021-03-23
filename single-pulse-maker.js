@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import { StyleSheet, Text, View, Button, Animated, Image } from 'react-native';
+import { StyleSheet, Text, View, Button, Animated, Image, TouchableOpacity } from 'react-native';
 import Main_beat_track from './assets/Main_beat_track.png'
 import Main_beat_track_h from './assets/Main_beat_track_highlighted.png'
 import playLogo from './assets/Play.png'
@@ -15,8 +15,7 @@ export class SinglePulseMaker extends Component{
                       timer:undefined,
                       total_pulses:0,
                       animValue: 0,
-                      xx:0,
-                      yy:0 }
+                      circle_r: 0 }
         this.id = Math.floor(Math.random()*100)
         this.last = (new Date().getTime())
         console.log("SINGLE PULSE MAKER!!", this.id)
@@ -29,18 +28,19 @@ export class SinglePulseMaker extends Component{
     // console.log("==Single Pulse Maker==", pulse_time_left, playing, onPulseCallback)
     async onPulse(){
         let c = (new Date()).getTime()
-        console.log("interval:", (c-this.last) )
+        // console.log("interval:", (c-this.last) )
         this.last = c
-        // console.log(this.id, "Internal tick number:", this.state.total_pulses+1)
+        console.log(this.id, "Internal tick number:", this.state.total_pulses+1)
         // this.setState({total_pulses:this.state.total_pulses+1})
         const new_timeout_left = this.props.onPulseCallback()
         // console.log("TIMEOUT LEFT", new_timeout_left)
         // clearInterval(this.state.timer)
-        this.setState({timer:setTimeout(this.onPulse, c + 750 - ((new Date()).getTime()))})
+        this.setState({timer:setTimeout(this.onPulse, c + new_timeout_left - ((new Date()).getTime()))})
         Animated.timing(this.state.animValue,{
             toValue:1,
-            duration:50
-        }).start(()=>{Animated.timing(this.state.animValue, {toValue:0, duration:50}).start()})
+            duration:50,
+            useNativeDriver:true
+        }).start(()=>{Animated.timing(this.state.animValue, {toValue:0, duration:50, useNativeDriver:true}).start()})
         // setPulseTimeLeft(new_timeout_left)
         // setNextTickTimer(setTimeout(onPulse, new_timeout_left))
 
@@ -54,7 +54,7 @@ export class SinglePulseMaker extends Component{
             console.log("small interval",c - start_i)
             start_i = c
             if (c - start > duration) {
-                console.log("INTERVAL", c- start)
+                // console.log("INTERVAL", c- start)
                 callback();
                 start = c;
                 // clearInterval(timeout);
@@ -80,6 +80,10 @@ export class SinglePulseMaker extends Component{
         // setTimeout(()=>{foo.clear()}, 10000)
     }
 
+    componentWillUnmount(){
+        if(this.state.timer !== undefined)
+            clearTimeout(this.state.timer)
+    }
     accurateInterval(func, interval, opts) {
 
         if (!opts) opts = {};
@@ -126,8 +130,8 @@ export class SinglePulseMaker extends Component{
            this.setState({playing:false})
         }
         else{            
-            const new_timeout_left = this.props.onPulseCallback()
-            this.setState({timer:setTimeout(this.onPulse, 10), playing:true})
+            // const new_timeout_left = this.props.onPulseCallback()
+            this.setState({timer:setTimeout(this.onPulse, 0), playing:true})
         }
     }
     setXY(x, y){
@@ -137,25 +141,28 @@ export class SinglePulseMaker extends Component{
         // console.log("RERENDER", this.state.xx, this.state.yy)
         // console.log("animated value", this.state.animValue)
         // Image.getSize(require("./assets/Main_beat_track.png"), (width, height)=>{console.log("hobs=======?", width, height)}, (error)=>{console.log("errored======", error)})
+        // console.log("PARENT CIRCLE_R", this.state.circle_r)
         return (
-                <Animated.View style={{border: "solid 1px black", height:"100%", width:"100%", display:"flex",justifyContent:"center", alignItems:"center"}}>
+                <Animated.View style={{borderWidth: 1, display:"flex", justifyContent:"center", alignItems:"center"}}>
                 <Image onLayout={event => {
                 const layout = event.nativeEvent.layout;
-                console.log('Circ height:', layout.height);
-                console.log('Circ width:', layout.width);
-                console.log('Circ x:', layout.x);
-                console.log('Circ y:', layout.y);
+                // console.log('Circ height:', layout.height);
+                // console.log('Circ width:', layout.width);
+                // console.log('Circ x:', layout.x);
+                // console.log('Circ y:', layout.y);
+                this.setState({circle_r:layout.height/2})
                 }}
                 source={Main_beat_track} alt="main track" style={{height:250, width:250 }} />
                 <Animated.Image source={Main_beat_track_h} alt="main track" style={{height:250, width:250, position:"absolute", opacity: this.state.animValue}} />
                 {(!this.state.playing)?
-                <a style={{position:"absolute"}} onClick={this.handlePlayStopButton} ><img src={playLogo} alt="play"/></a> 
+                <TouchableOpacity onPress={this.handlePlayStopButton}  style={{position:"absolute"}}><Image style={{height:50, width:50}} source={playLogo} alt="play"/></TouchableOpacity>
                 : 
-                <a style={{position:"absolute"}} onClick={this.handlePlayStopButton} ><img src={stopLogo} alt="stop"/></a>
+                <TouchableOpacity onPress={this.handlePlayStopButton}  style={{position:"absolute"}}><Image style={{height:50, width:50}} source={stopLogo} alt="stop"/></TouchableOpacity>
                 }
-                <CircularSlider style={{position:"absolute"}} btnRadius={80} setXY={this.setXY}></CircularSlider>
-                <View style={{border: "solid 1px black", borderRadius:"50%", height:25, width:25, backgroundColor:"white" ,position:"absolute",
-                                transform:[{translateY:-11.5 - 125 + this.state.yy}, {translateX:-125-99.5 + this.state.xx}]}}/>
+                <CircularSlider style={{position:"absolute"}} circle_r={this.state.circle_r} starting_theta={-Math.PI/2}></CircularSlider>
+                <CircularSlider style={{position:"absolute"}} circle_r={this.state.circle_r} starting_theta={0}></CircularSlider>
+                <CircularSlider style={{position:"absolute"}} circle_r={this.state.circle_r} starting_theta={Math.PI/2}></CircularSlider>
+                <CircularSlider style={{position:"absolute"}} circle_r={this.state.circle_r} starting_theta={Math.PI}></CircularSlider>
                 </Animated.View>
         )
         

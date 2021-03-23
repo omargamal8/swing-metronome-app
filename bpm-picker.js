@@ -10,9 +10,9 @@ class BpmPicker extends Component{
   }
 
   render(){
-    return (<View style={{display:"flex", alignItems:"center", flexDirection:"column", justifyContent:"space-evenly", border:"solid 1px black", width:"20vw" }}>
+    return (<View style={{display:"flex", alignItems:"center", flexDirection:"column", justifyContent:"space-evenly", borderWidth:1 }}>
               <Image style={{height:30, width:30 }} onClick={(e=>{console.log("inc bpm, props_bpm:", this.props.bpm, "state bpm", this.state.bpm); this.props.setBPM(this.props.bpm+1)})} source={require('./assets/ArrowUp.png')} alt="bpm ++"></Image>
-              <Text style={{fontSize:"36px", alignSelf:"center"}}>{this.props.bpm}</Text>
+              <Text style={{fontSize:36, alignSelf:"center"}}>{this.props.bpm}</Text>
               <Image style={{height:30, width:30 }} onClick={(e=>{console.log("dec bpm"); this.props.setBPM(this.props.bpm-1)})} source={ArrowDown} alt="bpm --"></Image>
            </View>)
   }

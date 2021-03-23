@@ -11,16 +11,16 @@ class SoundPicker extends Component {
 
     render(){
         return (
-            <View style={{display:"flex", flexDirection:"column", border:"solid 1px black", width:"20vw", marginRight:"10vw" }}>
+            <View style={{display:"flex", flexDirection:"column", borderWidth:1 }}>
               <View style={{display:"flex", flexDirection:"row"}}>
-                <Image style={{height:10, width:10, alignSelf:"center", marginRight:"2px"}} source={require("./assets/radio_button_selected.jpg")}></Image>  
-                <p1>BEAT</p1>
+                <Image style={{height:10, width:10, alignSelf:"center"}} source={require("./assets/radio_button_selected.jpg")}></Image>  
+                <Text>BEAT</Text>
               </View>
               <View style={{display:"flex", flexDirection:"row"}}>
-                <Image style={{height:10, width:10, alignSelf:"center", marginRight:"2px"}} source={require("./assets/radio_button.jpg")}></Image>  
-                <p1>SOUND</p1>
+                <Image style={{height:10, width:10, alignSelf:"center"}} source={require("./assets/radio_button.jpg")}></Image>  
+                <Text>SOUND</Text>
               </View>
-              <View style={{display:"grid", gridTemplateColumns:"0.5fr 0.5fr"}}>
+              <View style={{display:"flex", flexDirection:"row", flexWrap:"wrap"}}>
                   <Button color="grey" title="1"/>
                   <Button color="grey" title="2"/>
                   <Button color="grey" title="3"/>
@@ -32,17 +32,5 @@ class SoundPicker extends Component {
     }
 }
 
-const styles = StyleSheet.create({
-  subdivs_active:{
-      height: "50px",
-      width: "50px", 
-      opacity: "1"
-  },
-  subdivs_unactive:{
-    height: "50px",
-    width: "50px", 
-    opacity: "0.3"
-  }
-});
 
 export default SoundPicker;
