@@ -15,7 +15,12 @@ export class SinglePulseMaker extends Component{
                       timer:undefined,
                       total_pulses:0,
                       animValue: 0,
-                      circle_r: 0 }
+                      circle_r: 0,
+                      sliders_pos: [3*Math.PI/2, 0, Math.PI/2 , Math.PI],
+                      displacments : [0, 0, 0, 0],
+                      current_i : 0 ,
+                      animValues: [0,0,0,0]
+                     }
         this.id = Math.floor(Math.random()*100)
         this.last = (new Date().getTime())
         console.log("SINGLE PULSE MAKER!!", this.id)
@@ -30,17 +35,18 @@ export class SinglePulseMaker extends Component{
         let c = (new Date()).getTime()
         // console.log("interval:", (c-this.last) )
         this.last = c
-        console.log(this.id, "Internal tick number:", this.state.total_pulses+1)
+        // console.log(this.id, "Internal tick number:", this.state.total_pulses+1)
         // this.setState({total_pulses:this.state.total_pulses+1})
         const new_timeout_left = this.props.onPulseCallback()
+        // console.log("timeout in ", new_timeout_left)
         // console.log("TIMEOUT LEFT", new_timeout_left)
         // clearInterval(this.state.timer)
         this.setState({timer:setTimeout(this.onPulse, c + new_timeout_left - ((new Date()).getTime()))})
-        Animated.timing(this.state.animValue,{
-            toValue:1,
-            duration:50,
-            useNativeDriver:true
-        }).start(()=>{Animated.timing(this.state.animValue, {toValue:0, duration:50, useNativeDriver:true}).start()})
+        // Animated.timing(this.state.animValue,{
+        //     toValue:1,
+        //     duration:50,
+        //     useNativeDriver:true
+        // }).start(()=>{Animated.timing(this.state.animValue, {toValue:0, duration:50, useNativeDriver:true}).start()})
         // setPulseTimeLeft(new_timeout_left)
         // setNextTickTimer(setTimeout(onPulse, new_timeout_left))
 
@@ -84,6 +90,19 @@ export class SinglePulseMaker extends Component{
         if(this.state.timer !== undefined)
             clearTimeout(this.state.timer)
     }
+
+    shouldComponentUpdate(nextProps, nextState){
+        return true
+        // let {timer, ...cs} = this.state
+        // if(JSON.stringify(nextProps) === JSON.stringify(this.props) && JSON.stringify(ns) === JSON.stringify(cs)){
+            console.log("SHOULD UPDATE?", this.state.sliders_pos, nextState.sliders_pos)
+        if(this.state.playing === nextState.playing && this.state.sliders_pos === nextState.sliders_pos && this.state.displacments === nextState.displacments && this.state.circle_r === nextState.circle_r){
+            return false
+        }
+        else
+            return true
+    }
+
     accurateInterval(func, interval, opts) {
 
         if (!opts) opts = {};
@@ -125,20 +144,32 @@ export class SinglePulseMaker extends Component{
 
     handlePlayStopButton(){
         if(this.state.playing){
-           clearInterval(this.state.timer) 
+        //    clearInterval(this.state.timer) 
+           clearTimeout(this.state.timer)
            this.props.stopCleanUp()
            this.setState({playing:false})
         }
         else{            
             // const new_timeout_left = this.props.onPulseCallback()
+            // this.setState({timer:setInterval(this.onPulse, new_timeout_left), playing:true})
             this.setState({timer:setTimeout(this.onPulse, 0), playing:true})
         }
     }
     setXY(x, y){
         this.setState({xx:x, yy:y})
     }
+    updateSliderPos(i, v){
+        const [new_pos, disp] = v
+        let pos = this.state.sliders_pos
+        pos[i]=new_pos
+        let d = this.state.displacments
+        d[i] = disp
+        this.setState({displacments:d, sliders_pos:pos})
+        this.props.updateSwingValues(d)
+    }
     render(){
         // console.log("RERENDER", this.state.xx, this.state.yy)
+        // console.log("=======SINGLE PULSE MAKER RERENDER====")
         // console.log("animated value", this.state.animValue)
         // Image.getSize(require("./assets/Main_beat_track.png"), (width, height)=>{console.log("hobs=======?", width, height)}, (error)=>{console.log("errored======", error)})
         // console.log("PARENT CIRCLE_R", this.state.circle_r)
@@ -149,20 +180,21 @@ export class SinglePulseMaker extends Component{
                 // console.log('Circ height:', layout.height);
                 // console.log('Circ width:', layout.width);
                 // console.log('Circ x:', layout.x);
-                // console.log('Circ y:', layout.y);
+                console.log('Circ y:', layout.y);
+                console.log('circ_positions', this.state.sliders_pos, this.state.sliders_pos.filter((v,i)=>i!==0))
                 this.setState({circle_r:layout.height/2})
                 }}
                 source={Main_beat_track} alt="main track" style={{height:250, width:250 }} />
                 <Animated.Image source={Main_beat_track_h} alt="main track" style={{height:250, width:250, position:"absolute", opacity: this.state.animValue}} />
                 {(!this.state.playing)?
-                <TouchableOpacity onPress={this.handlePlayStopButton}  style={{position:"absolute"}}><Image style={{height:50, width:50}} source={playLogo} alt="play"/></TouchableOpacity>
+                <TouchableOpacity onPress={this.handlePlayStopButton}  style={{position:"absolute"}}><Image style={{}} source={playLogo} alt="play"/></TouchableOpacity>
                 : 
-                <TouchableOpacity onPress={this.handlePlayStopButton}  style={{position:"absolute"}}><Image style={{height:50, width:50}} source={stopLogo} alt="stop"/></TouchableOpacity>
+                <TouchableOpacity onPress={this.handlePlayStopButton}  style={{position:"absolute"}}><Image style={{}} source={stopLogo} alt="stop"/></TouchableOpacity>
                 }
-                <CircularSlider style={{position:"absolute"}} circle_r={this.state.circle_r} starting_theta={-Math.PI/2}></CircularSlider>
-                <CircularSlider style={{position:"absolute"}} circle_r={this.state.circle_r} starting_theta={0}></CircularSlider>
-                <CircularSlider style={{position:"absolute"}} circle_r={this.state.circle_r} starting_theta={Math.PI/2}></CircularSlider>
-                <CircularSlider style={{position:"absolute"}} circle_r={this.state.circle_r} starting_theta={Math.PI}></CircularSlider>
+                <CircularSlider style={{position:"absolute"}} circle_r={this.state.circle_r} starting_theta={this.state.sliders_pos[0]} theta_range={[this.state.sliders_pos[0], this.state.sliders_pos[0]+0.01]} update_pos={(v)=>this.updateSliderPos(0, v)}></CircularSlider>
+                <CircularSlider style={{position:"absolute"}} circle_r={this.state.circle_r} starting_theta={this.state.sliders_pos[1]} theta_range={[this.state.sliders_pos[0], this.state.sliders_pos[2]]} update_pos={(v)=>this.updateSliderPos(1, v)}></CircularSlider>
+                <CircularSlider style={{position:"absolute"}} circle_r={this.state.circle_r} starting_theta={this.state.sliders_pos[2]} theta_range={[this.state.sliders_pos[1], this.state.sliders_pos[3]]} update_pos={(v)=>this.updateSliderPos(2, v)}></CircularSlider>
+                <CircularSlider style={{position:"absolute"}} circle_r={this.state.circle_r} starting_theta={this.state.sliders_pos[3]} theta_range={[this.state.sliders_pos[2], this.state.sliders_pos[0]]} update_pos={(v)=>this.updateSliderPos(3, v)}></CircularSlider>
                 </Animated.View>
         )
         

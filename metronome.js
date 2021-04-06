@@ -9,16 +9,14 @@ import  SubdivisionPicker  from './subdivision-picker'
 import BpmTapper from "./bpm-tapper"
 import SoundPicker from "./sound-picker"
 import NavBar from "./nav-bar"
-import SoundPlayer from 'react-native-sound-player'
-// var Sound = require('react-native-sound');
 import { Audio } from 'expo-av';
 // import {}
 class MetronomeApp extends Component {
     constructor(props){
         super(props)
         this.state = {
-            bpm: 200,
-            active_subd: new QuarterNote(4,4),
+            bpm: 60,
+            active_subd: new SixteenthNote(4,4),
             sound: undefined,
             sound2: undefined,
             sounds: [],
@@ -29,6 +27,7 @@ class MetronomeApp extends Component {
         this.setBPM = this.setBPM.bind(this)
         this.stopPressed = this.stopPressed.bind(this)
         this.setActiveSubD = this.setActiveSubD.bind(this)
+        this.updateSwingValues = this.updateSwingValues.bind(this)
     }
 
     componentDidMount(){
@@ -40,19 +39,9 @@ class MetronomeApp extends Component {
           
           // Load the sound file 'whoosh.mp3' from the app bundle
           // See notes below about preloading sounds within initialization code below.
-          // var whoosh = new Sound('./assets/1.wav', Sound.MAIN_BUNDLE, (error) => {
-            // if (error) {
-              // console.log('failed to load the sound', error);
-              // return;
-            // }
-            // loaded successfully
-            // console.log('duration in seconds: ' + whoosh.getDuration() + 'number of channels: ' + whoosh.getNumberOfChannels());
-          
-          // });
-          // this.setState({sound})          
         
           Audio.Sound.createAsync(
-            require('./assets/2.wav')
+            require('./assets/MetronomeUp.wav')
           ).then((sound)=>{
             console.log("ACQUIRED Asset", sound)
             this.setState({sound:sound, sounds: [...this.state.sounds, sound]})
@@ -67,7 +56,7 @@ class MetronomeApp extends Component {
             require('./assets/2.wav')
           ).then((sound)=>{
             console.log("ACQUIRED Asset", sound)
-            this.setState({sound:sound, sounds: [...this.state.sounds, sound]})
+            this.setState({sound2:sound, sounds: [...this.state.sounds, sound]})
           });              
           Audio.Sound.createAsync(
             require('./assets/2.wav')
@@ -92,24 +81,20 @@ class MetronomeApp extends Component {
 
 
     tick(){
-        console.log("TICK", this.state.sound, this.state.bpm)
+        // console.log("TICK", this.state.sound, this.state.bpm)
         const c = (new Date()).getTime()
         // console.log("INTERVAL:", c - this.last)
         this.last = c
         const tick = (new Date()).getTime()
-        this.state.sounds[this.state.dummy].sound.playAsync().then(()=>{console.log("PLAYED IN:", (new Date()).getTime() - tick)}).catch(err=>{console.log("errrorr===========")})
-          // Play the sound with an onEnd callback
-        // whoosh.play((success) => {
-        //   if (success) {
-        //     console.log("PLAYED IN:", (new Date()).getTime() - tick);
-        //   } else {
-        //     console.log('playback failed due to audio decoding errors');
-        //   }
-        // });
-      
         this.state.active_subd.incrementTickCounter()
+        const downbeat = this.state.active_subd.isDownBeat()
+        const sound = (downbeat)? this.state.sound : this.state.sound2
+        sound.sound.replayAsync().then(()=>{}).catch(err=>{console.log("errrorr===========")})
+      
         // this.setState({dummy:(this.state.dummy+1)%4})
-        return (60 * this.state.active_subd.getNextTickInterval() / this.state.bpm) * 1000
+        // console.log(this.state.active_subd.getToString(), "NEXT TIMEOUT",
+        // (60 * this.state.active_subd.getNextTickInterval(this.state.displacments) / this.state.bpm) * 1000)
+        return (60 * this.state.active_subd.getNextTickInterval(this.state.displacments) / this.state.bpm) * 1000
     }
 
     stopPressed(){
@@ -120,6 +105,11 @@ class MetronomeApp extends Component {
       this.state.active_subd.clearCounters()
       this.setState({active_subd})
     }
+
+    updateSwingValues(displacments){
+      this.state.active_subd.updateSwingRatios(displacments.map(d=>d/(2*Math.PI)))
+    }
+
     render(){
         return (
           <View style={{display:"flex", flexDirection:"column", flex:1,justifyContent:"space-evenly"}}>
@@ -128,7 +118,7 @@ class MetronomeApp extends Component {
                 <SubdivisionPicker style={{flex:1}} setActiveSubD={this.setActiveSubD}></SubdivisionPicker>
               </View>
               <View style={{flex:1.8}}>
-                <SinglePulseMaker  pulse_time_left={0} playing={false} onPulseCallback={this.tick} stopCleanUp={this.stopPressed}></SinglePulseMaker>
+                <SinglePulseMaker  pulse_time_left={0} playing={false} onPulseCallback={this.tick} stopCleanUp={this.stopPressed} updateSwingValues={this.updateSwingValues}></SinglePulseMaker>
               </View>
               <View style={{display:"flex", flex:1, flexDirection:"row", justifyContent:"space-between", borderWidth:1}}>
                 <View style={{display:"flex", flexDirection:"column"}}>
