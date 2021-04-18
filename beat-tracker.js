@@ -38,6 +38,7 @@ export class QuarterNote extends BeatTracker{
     }
     
     incrementTickCounter(){
+        // console.log("TICK IN QUARTER")
         this.beat += 1
         if(this.beat === this.ts_a+1){
             this.beat = 1
@@ -58,6 +59,8 @@ export class EighthNote extends QuarterNote{
     }
     
     incrementTickCounter(){
+        console.log("TICK IN EIGHT")
+
         if(this.beat === 0){
             super.incrementTickCounter()
             return 
@@ -106,7 +109,7 @@ export class SixteenthNote extends EighthNote{
     return {BAR: this.bar, BEAT:this.beat, e:this.e, and:this.and, da:this.da}
     }
     incrementTickCounter(){
-
+        console.log("TICK IN SIXTEEN")
         if(this.beat === 0){
             super.incrementTickCounter()
             return 

@@ -1,16 +1,14 @@
 import React, {Component} from 'react';
-import { StyleSheet, Text, View, Image } from 'react-native';
+import { StyleSheet, Text, View, Image, Touchable, Pressable } from 'react-native';
+// import { Pressable } from 'react-native-gesture-handler';
 import {BeatTracker, SixteenthNote, EighthNote, QuarterNote} from './beat-tracker'
-import mmsub1 from './assets/mmsub1.png'
-import mmsub2 from './assets/mmsub2.png'
-import mmsub3 from './assets/mmsub3.png'
 
 class SubdivisionPicker extends Component {
     constructor(props){
         super(props)
-        this.subdivs= [new QuarterNote(4,4), new EighthNote(4,4), new SixteenthNote(4,4)]
+        this.subdivs= [new QuarterNote(4,4), new EighthNote(4,4), new SixteenthNote(4,4) ]
         this.state = {            
-            active_subd_i: 0
+            active_subd_i: 0,
         }
     }
 
@@ -22,26 +20,28 @@ class SubdivisionPicker extends Component {
   
 
     render(){
+      console.log("RENDER", this.state.active_subd_i, this.state.count)
         return (
             <View style={{display:"flex", flexDirection:"column", borderWidth:1 }}>
-              <Image style={(this.state.active_subd_i===0)?styles.subdivs_active:styles.subdivs_unactive} onClick={(e=>{this.setState({active_subd_i:0});this.props.setActiveSubD(this.subdivs[this.state.active_subd_i])})} source={require('./assets/mmsub1.png')} alt=""></Image>
-              <Image style={(this.state.active_subd_i===1)?styles.subdivs_active:styles.subdivs_unactive} onClick={(e=>{this.setState({active_subd_i:1});this.props.setActiveSubD(this.subdivs[this.state.active_subd_i])})} source={require('./assets/mmsub3.png')} alt=""></Image>
-              <Image style={(this.state.active_subd_i===2)?styles.subdivs_active:styles.subdivs_unactive} onClick={(e=>{this.setState({active_subd_i:2});this.props.setActiveSubD(this.subdivs[this.state.active_subd_i])})} source={require('./assets/mmsub2.png')} alt=""></Image>
+              <Pressable style={{...styles.subdiv, opacity:(this.state.active_subd_i===0)?1:0.3}} onPress={(e=>{console.log("PRESSED", 0); this.setState({active_subd_i:0});this.props.setActiveSubD(this.subdivs[0])})}><Image source={require('./assets/sd-quarter.png')} alt=""></Image></Pressable>
+              <Pressable style={{...styles.subdiv, opacity:(this.state.active_subd_i===1)?1:0.3}} onPress={(e=>{console.log("PRESSED", 1); this.setState({active_subd_i:1});this.props.setActiveSubD(this.subdivs[1])})}><Image source={require('./assets/sd-eight.png')} alt=""></Image></Pressable>
+              <Pressable style={{...styles.subdiv, opacity:(this.state.active_subd_i===2)?1:0.3}} onPress={(e=>{console.log("PRESSED", 2); this.setState({active_subd_i:2});this.props.setActiveSubD(this.subdivs[2])})}><Image source={require('./assets/sd-sixteen.png')} alt=""></Image></Pressable>
             </View>
         );
     }
 }
 
 const styles = StyleSheet.create({
+  subdiv:{
+    alignSelf:"center",
+  },
   subdivs_active:{
       opacity: 1,
-      flex:1,
-      alignSelf:"center"
+      alignSelf:"center",
   },
   subdivs_unactive:{
     opacity: 0.3,
-    flex:1,
-    alignSelf:"center"
+    alignSelf:"center",
   }
 });
 

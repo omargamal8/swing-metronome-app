@@ -39,7 +39,7 @@ export class SinglePulseMaker extends Component{
         // this.setState({total_pulses:this.state.total_pulses+1})
         const new_timeout_left = this.props.onPulseCallback()
         // console.log("timeout in ", new_timeout_left)
-        // console.log("TIMEOUT LEFT", new_timeout_left)
+        console.log("TIMEOUT LEFT", new_timeout_left)
         // clearInterval(this.state.timer)
         this.setState({timer:setTimeout(this.onPulse, c + new_timeout_left - ((new Date()).getTime()))})
         // Animated.timing(this.state.animValue,{
@@ -187,9 +187,9 @@ export class SinglePulseMaker extends Component{
                 source={Main_beat_track} alt="main track" style={{height:250, width:250 }} />
                 <Animated.Image source={Main_beat_track_h} alt="main track" style={{height:250, width:250, position:"absolute", opacity: this.state.animValue}} />
                 {(!this.state.playing)?
-                <TouchableOpacity onPress={this.handlePlayStopButton}  style={{position:"absolute"}}><Image style={{}} source={playLogo} alt="play"/></TouchableOpacity>
+                <TouchableOpacity onPress={this.handlePlayStopButton}  style={{position:"absolute"}}><Image style={{width:50, height:50}} source={playLogo} alt="play"/></TouchableOpacity>
                 : 
-                <TouchableOpacity onPress={this.handlePlayStopButton}  style={{position:"absolute"}}><Image style={{}} source={stopLogo} alt="stop"/></TouchableOpacity>
+                <TouchableOpacity onPress={this.handlePlayStopButton}  style={{position:"absolute"}}><Image style={{width:50, height:50}} source={stopLogo} alt="stop"/></TouchableOpacity>
                 }
                 <CircularSlider style={{position:"absolute"}} circle_r={this.state.circle_r} starting_theta={this.state.sliders_pos[0]} theta_range={[this.state.sliders_pos[0], this.state.sliders_pos[0]+0.01]} update_pos={(v)=>this.updateSliderPos(0, v)}></CircularSlider>
                 <CircularSlider style={{position:"absolute"}} circle_r={this.state.circle_r} starting_theta={this.state.sliders_pos[1]} theta_range={[this.state.sliders_pos[0], this.state.sliders_pos[2]]} update_pos={(v)=>this.updateSliderPos(1, v)}></CircularSlider>
