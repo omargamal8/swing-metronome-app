@@ -127,6 +127,7 @@ class MetronomeApp extends Component {
     }
 
     setActiveSubD(active_subd){
+      console.log("SETTING ACTIVE SUBD")
       this.state.active_subd.clearCounters()
       this.setState({active_subd})
     }
@@ -149,7 +150,7 @@ class MetronomeApp extends Component {
                 <SubdivisionPicker style={{flex:1}} setActiveSubD={this.setActiveSubD}></SubdivisionPicker>
               </View>
               <View style={{flex:1.6, borderWidth:1, borderColor:'red'}}>
-                <SinglePulseMaker  pulse_time_left={0} playing={false} onPulseCallback={this.tick} stopCleanUp={this.stopPressed} updateSwingValues={this.updateSwingValues}></SinglePulseMaker>
+                <SinglePulseMaker  pulse_time_left={0} playing={false} onPulseCallback={this.tick} subd_count={this.state.active_subd.subd_count} stopCleanUp={this.stopPressed} updateSwingValues={this.updateSwingValues}></SinglePulseMaker>
               </View>
               <View style={{display:"flex", flex:1, flexDirection:"row", justifyContent:"space-between", borderWidth:1}}>
                 <View style={{display:"flex", flexDirection:"column"}}>

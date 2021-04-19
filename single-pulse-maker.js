@@ -16,20 +16,32 @@ export class SinglePulseMaker extends Component{
                       total_pulses:0,
                       animValue: 0,
                       circle_r: 0,
-                      sliders_pos: [3*Math.PI/2, 0, Math.PI/2 , Math.PI],
-                      displacments : [0, 0, 0, 0],
+                      sliders_pos: this.createSliderPositions(this.props.subd_count),
+                      displacments : [...Array(this.props.subd_count)].map(e=>0),
                       current_i : 0 ,
-                      animValues: [0,0,0,0]
+                      animValues: [...Array(this.props.subd_count)].map(e=>0)
                      }
         this.id = Math.floor(Math.random()*100)
         this.last = (new Date().getTime())
-        console.log("SINGLE PULSE MAKER!!", this.id)
         this.handlePlayStopButton = this.handlePlayStopButton.bind(this)
         this.onPulse = this.onPulse.bind(this)
         this.setXY = this.setXY.bind(this)
         
     }
     
+    createSliderPositions(subd_count){
+        const segment = 2 * Math.PI / subd_count
+        let sliders_pos = [0]
+        sliders_pos = [...Array(subd_count-1)].reduce((p, c, i)=>{
+            return p.concat([segment+p[i]])
+        },[0])
+        sliders_pos = sliders_pos.map(pos=>{
+            pos = pos - (Math.PI/2)
+            return (pos < 0)? 2*Math.PI + pos : pos 
+        })
+
+        return sliders_pos
+    }
     // console.log("==Single Pulse Maker==", pulse_time_left, playing, onPulseCallback)
     async onPulse(){
         let c = (new Date()).getTime()
@@ -89,6 +101,14 @@ export class SinglePulseMaker extends Component{
     componentWillUnmount(){
         if(this.state.timer !== undefined)
             clearTimeout(this.state.timer)
+    }
+
+    componentDidUpdate(prevProps, prevState){
+        console.log("COMPONENT DID UPDATE?", prevProps.subd_count, this.props.subd_count)
+        if(prevProps.subd_count !== this.props.subd_count)
+            this.setState({sliders_pos:this.createSliderPositions(this.props.subd_count),
+                            displacments: [...Array(this.props.subd_count)].map(e=>0),
+                            animValues: [...Array(this.props.subd_count)].map(e=>0)})
     }
 
     shouldComponentUpdate(nextProps, nextState){
@@ -169,11 +189,11 @@ export class SinglePulseMaker extends Component{
     }
     render(){
         // console.log("RERENDER", this.state.xx, this.state.yy)
-        // console.log("=======SINGLE PULSE MAKER RERENDER====")
+        console.log("=======SINGLE PULSE MAKER RERENDER====", this.props.subd_count, this.state.sliders_pos)
         // console.log("animated value", this.state.animValue)
         // Image.getSize(require("./assets/Main_beat_track.png"), (width, height)=>{console.log("hobs=======?", width, height)}, (error)=>{console.log("errored======", error)})
         // console.log("PARENT CIRCLE_R", this.state.circle_r)
-        return (
+        return (this.props.subd_count === this.state.sliders_pos.length)?(
                 <Animated.View style={{borderWidth: 1, display:"flex", justifyContent:"center", alignItems:"center"}}>
                 <Image onLayout={event => {
                 const layout = event.nativeEvent.layout;
@@ -191,12 +211,12 @@ export class SinglePulseMaker extends Component{
                 : 
                 <TouchableOpacity onPress={this.handlePlayStopButton}  style={{position:"absolute"}}><Image style={{width:50, height:50}} source={stopLogo} alt="stop"/></TouchableOpacity>
                 }
-                <CircularSlider style={{position:"absolute"}} circle_r={this.state.circle_r} starting_theta={this.state.sliders_pos[0]} theta_range={[this.state.sliders_pos[0], this.state.sliders_pos[0]+0.01]} update_pos={(v)=>this.updateSliderPos(0, v)}></CircularSlider>
-                <CircularSlider style={{position:"absolute"}} circle_r={this.state.circle_r} starting_theta={this.state.sliders_pos[1]} theta_range={[this.state.sliders_pos[0], this.state.sliders_pos[2]]} update_pos={(v)=>this.updateSliderPos(1, v)}></CircularSlider>
-                <CircularSlider style={{position:"absolute"}} circle_r={this.state.circle_r} starting_theta={this.state.sliders_pos[2]} theta_range={[this.state.sliders_pos[1], this.state.sliders_pos[3]]} update_pos={(v)=>this.updateSliderPos(2, v)}></CircularSlider>
-                <CircularSlider style={{position:"absolute"}} circle_r={this.state.circle_r} starting_theta={this.state.sliders_pos[3]} theta_range={[this.state.sliders_pos[2], this.state.sliders_pos[0]]} update_pos={(v)=>this.updateSliderPos(3, v)}></CircularSlider>
+                {[...Array(this.props.subd_count)].map((_,i)=>
+                    <CircularSlider style={{position:"absolute"}} circle_r={this.state.circle_r} starting_theta={this.state.sliders_pos[i]} theta_range={[this.state.sliders_pos[Math.max(i-1,0)], this.state.sliders_pos[(i+1)%this.state.sliders_pos.length]]} update_pos={(v)=>this.updateSliderPos(i, v)} ID={i}></CircularSlider>
+                )}
                 </Animated.View>
-        )
+        ):
+        (<Text>Error</Text>)
         
     }
 }

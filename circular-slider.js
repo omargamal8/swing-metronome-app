@@ -108,7 +108,7 @@ class CircularSlider extends Component {
         const displacment = (theta > 3*Math.PI/2 && theta < 2*Math.PI) ? (theta - 2*Math.PI) - this.state.orig_theta : theta - this.state.orig_theta
         // console.log("TDXY",theta, theta * (180 / Math.PI), x, y)
         const allowed = this.isAllowedTheta(theta)
-        // console.log("T TR",theta, this.props.theta_range, "allowed", allowed, "displacment", displacment * (180 / Math.PI))
+        console.log("T TR",theta, this.props.theta_range, "allowed", allowed, "displacment", displacment * (180 / Math.PI))
         // console.log(x , y < 50)
         const dx = new_x - this.state.current_x , dy = new_y - this.state.current_y 
         if(allowed ){
@@ -143,6 +143,7 @@ class CircularSlider extends Component {
             return true
     }
     render(){
+        console.log("================ CIRC SLIDER "+this.props.ID+" ==================", this.props.starting_theta, this.props.theta_range)
         return (
         <View onLayout={event => {
             // event.target.measure(
